@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<ui:composition template="_template.xhtml">
+	<ui:define name="titulo">
+		<h3>Alterar Beneficiário de Pesquisa</h3>
+	</ui:define>
+
+	<ui:define name="conteudo">
+
+
+		<h:form id="form">
+			<p:messages id="messages" />
+			<p:panel id="benefi" header="Pesquisar Beneficiário"
+				style="margin-bottom:20px">
+				<h:panelGrid columns="2" cellpadding="10">
+					<p:outputLabel value="Inscrição:" for="inscricao" />
+					<p:inputText id="inscricao" value="#{beneficiarioBean.inscricao}"
+						maxlength="5">
+						<p:keyFilter for="inscricao" mask="num" />
+					</p:inputText>
+
+					<p:outputLabel value="Nome:" for="nome" />
+					<p:inputText id="nome" value="#{beneficiarioBean.nome}" size="60" />
+
+					<p:outputLabel value="CPF:" for="cpf" />
+					<p:inputMask id="cpf" value="#{beneficiarioBean.CPF}"
+						mask="999.999.999-99">
+					</p:inputMask>
+
+					<p:outputLabel value="Data de Nascimento:" for="dataNascimento" />
+					<p:calendar id="dataNascimento" locale="pt"
+						value="#{beneficiarioBean.dataNascimento}" pattern="dd/MM/yyyy"
+						timeZone="America/Sao_Paulo" mask="true">
+					</p:calendar>
+
+					<p:commandButton icon="fa fa-fw fa-search" value="Pesquisar"
+						action="#{beneficiarioBean.pesquisaBeneficiario}"
+						process="@form formBeneficiario" update="@form formBeneficiario">
+					</p:commandButton>
+
+					<p:commandButton icon="fa fa-fw fa-eraser" value="Limpar"
+						action="#{beneficiarioBean.limpar}"
+						process="@form formBeneficiario" update="@form formBeneficiario">
+					</p:commandButton>
+
+				</h:panelGrid>
+			</p:panel>
+		</h:form>
+		<br></br>
+		<h:form id="formBeneficiario">
+			<p:dataTable var="beneficiario"
+				value="#{beneficiarioBean.beneficiarios}" id="tbl"
+				emptyMessage="Nenhum Registro Encontrado" paginator="true" rows="20" selectionMode="single"
+				rowKey="#{beneficiario.id}">
+				<f:facet name="header">Beneficiários</f:facet>
+				<p:ajax event="rowSelect" listener="#{beneficiarioBean.onRowSelect}" update=":form:messages" oncomplete="self.location= 'principal.xhtml';" />
+
+				<p:column headerText="Inscrição">
+					<h:outputText value="#{beneficiario.inscricao}" />
+				</p:column>
+
+				<p:column headerText="Nome">
+					<h:outputText value="#{beneficiario.nome}" />
+				</p:column>
+
+				<p:column headerText="CPF">
+					<h:outputText value="#{beneficiario.CPF}" />
+				</p:column>
+
+				<p:column headerText="Data de Nascimento">
+					<h:outputText value="#{beneficiario.dataNascimento.time}">
+						<f:convertDateTime pattern="dd/MM/yyyy"
+							timeZone="America/Sao_Paulo" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Situação">
+					<h:outputText value="#{beneficiario.situacao.descricao}" />
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+
+
+
+
+
+	</ui:define>
+	<ui:define name="texto" />
+
+</ui:composition>
+</html>

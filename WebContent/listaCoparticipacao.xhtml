@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<ui:composition template="_template.xhtml">
+	<ui:define name="titulo">
+		<h3>Listagem de Coparticipação</h3>
+	</ui:define>
+
+	<ui:define name="conteudo">
+
+
+		<h:form id="formPesquisa">
+			<p:messages id="messages" />
+			<p:panel id="busca" header="Busca por Mês / Ano"
+				style="margin-bottom:20px">
+				<h:panelGrid columns="4" cellpadding="10">
+
+					<p:outputLabel value="Mês de Referencia:" for="mes" />
+					<p:selectOneMenu value="#{coparticipacaoBean.mes}" id="mes"
+						style="width:125px">
+						<f:selectItems value="#{coparticipacaoBean.meses}" var="mes"
+							itemLabel="#{mes}" itemValue="#{mes.numMes}" />
+					</p:selectOneMenu>
+					<p:outputLabel value="Ano:" for="ano" />
+					<p:inputText id="ano" value="#{coparticipacaoBean.ano}"
+						required="true" requiredMessage="Ano deve ser Preenchido">
+						<f:validateLength minimum="4" maximum="4" />
+						<p:keyFilter for="ano" mask="num" />
+					</p:inputText>
+
+					<p:commandButton icon="fa fa-fw fa-search" value="Pesquisar"
+						action="#{coparticipacaoBean.atualizar}"
+						process="@form formcontaBeneficiario"
+						update="@all">
+					</p:commandButton>
+				</h:panelGrid>
+			</p:panel>
+
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()" />
+			<p:dialog widgetVar="statusDialog" modal="true" draggable="false"
+				closable="false" resizable="false" showHeader="false">
+				<p:graphicImage library="img" name="ajaxloadingbar.gif" />
+			</p:dialog>
+
+		</h:form>
+		<br></br>
+
+		<!-- Lista de Titulares -->
+
+		<h:form id="formcontaBeneficiario"
+			rendered="#{coparticipacaoBean.listaTitularONOFF}">
+			<p:dataTable id="tblTit" var="contaBeneficiario"
+				value="#{coparticipacaoBean.contaBeneficiario}"
+				sortBy="#{contaBeneficiario.beneficiario.titularidade}"
+				expandableRowGroups="true" emptyMessage="Nenhum Registro Encontrado">
+				<f:facet name="header">
+					<h:outputText value="#{coparticipacaoBean.tituloPainelTitular}" />
+				</f:facet>
+				<p:headerRow>
+					<p:column colspan="6">
+						<h:outputText value="#{contaBeneficiario.beneficiario.nome}" />
+					</p:column>
+				</p:headerRow>
+
+				<p:column headerText="Beneficiário" visible="false">
+					<h:outputText value="#{contaBeneficiario.beneficiario.nome}" />
+				</p:column>
+
+				<p:column headerText="Data de Atendimento">
+					<h:outputText value="#{contaBeneficiario.dataEntrada.time}">
+						<f:convertDateTime pattern="dd/MM/yyyy"
+							timeZone="America/Sao_Paulo" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Prestador">
+					<h:outputText value="#{contaBeneficiario.nomeConveniado}" />
+				</p:column>
+
+				<p:column headerText="Procedimento">
+					<h:outputText value="#{contaBeneficiario.descricaoItem}" />
+				</p:column>
+
+				<p:column headerText="Qtde.">
+					<h:outputText value="#{contaBeneficiario.qtde}" />
+				</p:column>
+
+				<p:column headerText="Valor da Despesa">
+					<h:outputText value="#{contaBeneficiario.valorPago}">
+						<f:convertNumber currencyCode="BRL" type="currency" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Valor da Coparticipação">
+					<h:outputText value="#{contaBeneficiario.coparticipacao}">
+						<f:convertNumber currencyCode="BRL" type="currency" />
+					</h:outputText>
+				</p:column>
+				<p:summaryRow>
+					<p:column colspan="3" style="text-align:right">
+						<h:outputText value="Total:" />
+					</p:column>
+					<p:column>
+						<h:outputText
+							value="#{(coparticipacaoBean.somarQuantidade(contaBeneficiario.beneficiario.id))}" />
+					</p:column>
+					<p:column>
+						<h:outputText value="#{(coparticipacaoBean.somarValorPago())}">
+							<f:convertNumber currencyCode="BRL" type="currency" />
+						</h:outputText>
+					</p:column>
+					<p:column>
+						<h:outputText
+							value="#{(coparticipacaoBean.somarCoparticipacao())}">
+							<f:convertNumber currencyCode="BRL" type="currency" />
+						</h:outputText>
+					</p:column>
+				</p:summaryRow>
+
+			</p:dataTable>
+			<br></br>
+			<h:commandLink>
+				<p:graphicImage library="img" name="excel.png" />
+				<p:dataExporter type="xls" target="tblTit" fileName="tabelaTitular"
+					pageOnly="true" />
+			</h:commandLink>
+			<h:commandLink>
+				<p:graphicImage library="img" name="pdf.png" />
+				<p:dataExporter type="pdf" target="tblTit" fileName="tabelaTitular"
+					pageOnly="true" />
+			</h:commandLink>
+		</h:form>
+
+
+		<!-- Lista de Dependentes Menores -->
+
+		<h:form id="formcontaDepMenor"
+			rendered="#{coparticipacaoBean.listaDepMenorONOFF}">
+			<p:dataTable id="tblDepMenor" var="contaDepMenor"
+				value="#{coparticipacaoBean.contaDependenteMenor}"
+				sortBy="#{contaDepMenor.beneficiario.titularidade}"
+				expandableRowGroups="true" emptyMessage="Nenhum Registro Encontrado">
+				<f:facet name="header">Dependentes Menores</f:facet>
+				<p:headerRow>
+					<p:column colspan="6">
+						<h:outputText value="#{contaDepMenor.beneficiario.nome}" />
+					</p:column>
+				</p:headerRow>
+
+				<p:column headerText="Beneficiário" visible="false">
+					<h:outputText value="#{contaDepMenor.beneficiario.nome}" />
+				</p:column>
+
+				<p:column headerText="Data de Atendimento">
+					<h:outputText value="#{contaDepMenor.dataEntrada.time}">
+						<f:convertDateTime pattern="dd/MM/yyyy"
+							timeZone="America/Sao_Paulo" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Prestador">
+					<h:outputText value="#{contaDepMenor.nomeConveniado}" />
+				</p:column>
+
+				<p:column headerText="Procedimento">
+					<h:outputText value="#{contaDepMenor.descricaoItem}" />
+				</p:column>
+
+				<p:column headerText="Qtde.">
+					<h:outputText value="#{contaDepMenor.qtde}" />
+				</p:column>
+
+				<p:column headerText="Valor da Despesa">
+					<h:outputText value="#{contaDepMenor.valorPago}">
+						<f:convertNumber currencyCode="BRL" type="currency" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Valor da Coparticipação">
+					<h:outputText value="#{contaDepMenor.coparticipacao}">
+						<f:convertNumber currencyCode="BRL" type="currency" />
+					</h:outputText>
+				</p:column>
+				<p:summaryRow>
+					<p:column colspan="3" style="text-align:right">
+						<h:outputText value="Total:" />
+					</p:column>
+					<p:column>
+						<h:outputText
+							value="#{(coparticipacaoBean.somarQuantidade(contaDepMenor.beneficiario.id))}" />
+					</p:column>
+					<p:column>
+						<h:outputText value="#{(coparticipacaoBean.somarValorPago())}">
+							<f:convertNumber currencyCode="BRL" type="currency" />
+						</h:outputText>
+					</p:column>
+					<p:column>
+						<h:outputText
+							value="#{(coparticipacaoBean.somarCoparticipacao())}">
+							<f:convertNumber currencyCode="BRL" type="currency" />
+						</h:outputText>
+					</p:column>
+				</p:summaryRow>
+
+			</p:dataTable>
+			<br></br>
+			<h:commandLink>
+				<p:graphicImage library="img" name="excel.png" />
+				<p:dataExporter type="xls" target="tblDepMenor"
+					fileName="tabelaDepMenor" pageOnly="true" />
+			</h:commandLink>
+			<h:commandLink>
+				<p:graphicImage library="img" name="pdf.png" />
+				<p:dataExporter type="pdf" target="tblDepMenor"
+					fileName="tabelaDepMenor" pageOnly="true" />
+			</h:commandLink>
+		</h:form>
+
+
+		<!-- Lista de Dependentes Maiores -->
+
+		<h:form id="formcontaDepMaior"
+			rendered="#{coparticipacaoBean.listaDepMaiorONOFF}">
+			<p:dataTable id="tblDepMaior" var="contaDepMaior"
+				value="#{coparticipacaoBean.contaDependenteMaior}"
+				sortBy="#{contaDepMaior.beneficiario.titularidade}"
+				expandableRowGroups="true" emptyMessage="Nenhum Registro Encontrado">
+				<f:facet name="header">Dependentes Maiores e Assistidos</f:facet>
+				<p:headerRow>
+					<p:column colspan="3">
+						<h:outputText value="#{contaDepMaior.beneficiario.nome}" />
+					</p:column>
+				</p:headerRow>
+
+				<p:column headerText="Beneficiário" visible="false">
+					<h:outputText value="#{contaDepMaior.beneficiario.nome}" />
+				</p:column>
+
+
+				<p:column headerText="Qtde.">
+					<h:outputText value="#{contaDepMaior.quantidade}" />
+				</p:column>
+
+				<p:column headerText="Valor da Despesa">
+					<h:outputText value="#{contaDepMaior.valorPago}">
+						<f:convertNumber currencyCode="BRL" type="currency" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Valor da Coparticipação">
+					<h:outputText value="#{contaDepMaior.coparticipacao}">
+						<f:convertNumber currencyCode="BRL" type="currency" />
+					</h:outputText>
+				</p:column>
+
+			</p:dataTable>
+			<br></br>
+			<h:commandLink>
+				<p:graphicImage library="img" name="excel.png" />
+				<p:dataExporter type="xls" target="tblDepMaior"
+					fileName="tabelaDepMaior" pageOnly="true" />
+			</h:commandLink>
+			<h:commandLink>
+				<p:graphicImage library="img" name="pdf.png" />
+				<p:dataExporter type="pdf" target="tblDepMaior"
+					fileName="tabelaDepMaior" pageOnly="true" />
+			</h:commandLink>
+		</h:form>
+		<br></br>
+
+		<p:panelGrid>
+			<f:facet name="header">
+				<p:row>
+					<p:column colspan="7">Total Geral</p:column>
+				</p:row>
+				<p:row>
+					<p:column>Quantidade</p:column>
+					<p:column>Valor da Despesa</p:column>
+					<p:column>Valor da Coparticipação</p:column>
+				</p:row>
+
+			</f:facet>
+
+			<p:row>
+				<p:column>
+					<h:outputText value="#{coparticipacaoBean.totalGeral.quantidade}" />
+				</p:column>
+				<p:column>
+					<h:outputText
+						value="#{coparticipacaoBean.totalGeral.totalPagoFormatado}" />
+				</p:column>
+				<p:column>
+					<h:outputText
+						value="#{coparticipacaoBean.totalGeral.totalCoparticipacaoFormatado}" />
+				</p:column>
+			</p:row>
+
+		</p:panelGrid>
+
+	</ui:define>
+	<ui:define name="texto" />
+
+</ui:composition>
+</html>

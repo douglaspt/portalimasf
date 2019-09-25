@@ -1,0 +1,169 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script
+		src="https://www.googletagmanager.com/gtag/js?id=UA-139058908-1"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() {
+			dataLayer.push(arguments);
+		}
+		gtag('js', new Date());
+
+		gtag('config', 'UA-139058908-1');
+	</script>
+
+	<link href="${contextPath}resources/css/estilo.css" rel="stylesheet"
+		type="text/css" media="all" />
+
+
+	<title>Portal IMASF</title>
+</h:head>
+<h:body class="background">
+
+	<script type="text/javascript">
+		function handleLoginRequest(xhr, status, args) {
+			if (args.validationFailed || !args.loggedIn) {
+				PF('dlg').jq.effect("shake", {
+					times : 5
+				}, 100);
+			} else {
+				PF('dlg').hide();
+				$('#loginLink').fadeOut();
+			}
+		}
+	</script>
+
+	<h:outputScript library="js" name="locale-primefaces.js" />
+
+
+	<div id="cabecalho">
+		<p:growl id="messages" showDetail="false" autoUpdate="true"
+			sticky="true" />
+
+		<h:panelGrid columns="2">
+			<h:graphicImage library="img" name="logoImasf.png" />
+			<p:fieldset legend="Beneficiário"
+				style="position:absolute; right: 50px; top: 10px;">
+				<h:panelGrid columns="2" cellpadding="5">
+					<p:outputLabel value="Nome: #{beneficiarioLogado.nome}"
+						style="font-weight: bold" />
+					<br></br>
+					<p:outputLabel
+						value="Inscrição: #{beneficiarioLogado.inscricao}        -        Idade: #{beneficiarioLogado.idade}" />
+					<br></br>
+					<p:outputLabel value="Plano: #{beneficiarioLogado.plano}" />
+					<br></br>
+					<p:outputLabel value="Admin: #{adminLogado.usuario}"
+						style="font-weight: bold" rendered="#{adminLogado != null}" />
+				</h:panelGrid>
+			</p:fieldset>
+		</h:panelGrid>
+		<br />
+		<h:form>
+			<p:menubar style="width: 50%">
+				<p:menuitem value="Home" icon="fa fa-home"
+					action="principal?faces-redirect=true" />
+
+				<p:submenu label="Administrador" icon="fa fa-wrench"
+					rendered="#{adminLogado != null}">
+					<p:menuitem value="Cadastrar Administrador"
+						action="alteraPrestador?faces-redirect=true" />
+					<p:menuitem value="Alterar Beneficiario de Pesquisa"
+						action="pesquisaBeneficiario?faces-redirect=true" />
+					<p:menuitem value="Alterar dados do Beneficiario"
+						action="alteraBeneficiario?faces-redirect=true" />
+					<p:submenu label="Processamento">
+						<p:menuitem value="Carregar Arquivo de Valores por Prestador"
+							action="uploadItemValor?faces-redirect=true" />
+						<p:menuitem value="Carregar Arquivo de Beneficiários"
+							action="uploadBeneficiario?faces-redirect=true" />	
+					</p:submenu>
+				</p:submenu>
+
+
+				<p:menuitem value="Coparticipação" icon="ui-icon-document"
+					action="listaCoparticipacao?faces-redirect=true" />
+
+				<p:submenu label="Pesquisar Valores" icon="fa fa-search">
+					<p:menuitem value="Rede Normal"
+						action="listaRedeNormal?faces-redirect=true" />
+					<p:menuitem value="Rede Referenciada"
+						action="listaRedeReferencia?faces-redirect=true" />
+
+				</p:submenu>
+
+
+				<p:menuitem value="Alterar Senha" icon="ui-icon-document"
+					onclick="PF('dlg').show();" />
+
+				<p:menuitem value="Logout" icon="ui-icon-close"
+					action="#{loginBean.deslogar}" />
+
+			</p:menubar>
+
+		</h:form>
+
+
+		<h:form id="formAlterarSenha">
+			<p:growl id="messagesRecuperacao" showDetail="false"
+				globalOnly="false" sticky="true" />
+
+			<p:dialog header="Alterar Senha?" widgetVar="dlg" resizable="false"
+				modal="true">
+
+				<h:panelGrid columns="2" cellpadding="5">
+
+					<h:outputLabel for="senhaAtual" value="Senha Atual:" />
+					<p:password id="senhaAtual" value="#{loginBean.senha}"
+						required="true" requiredMessage="Senha Atual deve ser preenchida!" />
+
+					<h:outputLabel for="senhaNova" value="Nova Senha:" />
+					<p:password id="senhaNova" value="#{loginBean.senhaNova}"
+						required="true" requiredMessage="Nova Senha deve ser preenchida!" />
+
+					<f:facet name="footer">
+						<p:commandButton value="Enviar" action="#{loginBean.alterarSenha}"
+							update="messagesRecuperacao" process="formAlterarSenha"
+							oncomplete="handleLoginRequest(xhr, status, args)" />
+					</f:facet>
+				</h:panelGrid>
+			</p:dialog>
+		</h:form>
+
+		<h2>
+			<ui:insert name="titulo"></ui:insert>
+		</h2>
+	</div>
+
+	<!-- 
+				<p:submenu label="Tabela de Coparticipação" icon="ui-icon-document">
+					<p:menuitem value="Rede Normal"
+						action="listaRedeNormal?faces-redirect=true" />
+					<p:menuitem value="Hospitais de Referência"
+						action="addUsuario?faces-redirect=true" />
+				</p:submenu>
+				
+				 -->
+
+	<div id="conteudo">
+		<ui:insert name="conteudo">
+		</ui:insert>
+		<br></br> <br></br>
+	</div>
+	<br></br>
+	<div id="rodape" align="right" class="rodape">
+		<h:outputLabel value="Desenvolvido por Horizonte Sistemas  " />
+		<h:graphicImage library="img" name="logoPCHMini.png" class="logo" />
+		<ui:insert name="texto">
+		</ui:insert>
+	</div>
+
+</h:body>
+</html>
