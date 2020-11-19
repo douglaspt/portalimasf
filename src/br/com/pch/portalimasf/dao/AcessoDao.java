@@ -82,13 +82,13 @@ public class AcessoDao implements Serializable {
 	}
 
 	public Acesso buscaPorEmailSenha(String email, String senha) {
-
+		System.out.println("Aquii 03");
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<Acesso> query = criteriaBuilder.createQuery(Acesso.class);
 		Root<Acesso> root = query.from(Acesso.class);
 		Path<String> emailPath = root.<String> get("email");
 		Path<String> senhaPath = root.<String> get("senha");
-
+		System.out.println("Aquii 04");
 		List<Predicate> predicates = new ArrayList<Predicate>();
 
 		Predicate emailIgual = criteriaBuilder.equal(emailPath, email);
@@ -107,6 +107,13 @@ public class AcessoDao implements Serializable {
 
 		}
 
+	}
+	
+	public List<Acesso> listaTodos() {
+		CriteriaQuery<Acesso> query = em.getCriteriaBuilder().createQuery(Acesso.class);
+		query.select(query.from(Acesso.class));
+		List<Acesso> lista = em.createQuery(query).getResultList();
+		return lista;
 	}
 
 }

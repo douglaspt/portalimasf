@@ -41,8 +41,6 @@
 	</script>
 
 	<h:outputScript library="js" name="locale-primefaces.js" />
-
-
 	<div id="cabecalho">
 		<p:growl id="messages" showDetail="false" autoUpdate="true"
 			sticky="true" />
@@ -91,7 +89,7 @@
 				<p:menuitem value="Coparticipação" icon="ui-icon-document"
 					action="listaCoparticipacao?faces-redirect=true" />
 
-				<p:submenu label="Pesquisar Valores" icon="fa fa-search">
+				<p:submenu label="Pesquisar Valores" icon="fa fa-search" rendered="#{adminLogado != null}">
 					<p:menuitem value="Rede Normal"
 						action="listaRedeNormal?faces-redirect=true" />
 					<p:menuitem value="Rede Referenciada"

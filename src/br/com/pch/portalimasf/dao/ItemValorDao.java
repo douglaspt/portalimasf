@@ -15,7 +15,9 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import br.com.pch.portalimasf.modelo.ClassificacaoSADT;
 import br.com.pch.portalimasf.modelo.Conveniado;
+import br.com.pch.portalimasf.modelo.DescricaoCombo;
 import br.com.pch.portalimasf.modelo.ItemValor;
 import br.com.pch.portalimasf.tx.Transacional;
 
@@ -121,5 +123,23 @@ public class ItemValorDao implements Serializable {
 		}
 
 	}
+	
+	public List<DescricaoCombo> buscaGrupo() {
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<DescricaoCombo> query = criteriaBuilder.createQuery(DescricaoCombo.class);
+		Root<ClassificacaoSADT> item = query.from(ClassificacaoSADT.class);
+		query.multiselect(item.<String>get("grupo"));
+		query.groupBy(item.<String>get("grupo"));
+		query.orderBy(criteriaBuilder.asc(item.<String>get("grupo")));
+		TypedQuery<DescricaoCombo> typedQuery = em.createQuery(query);
+		try {
+			return typedQuery.getResultList();
+		} catch (NoResultException ex) {
+			return null;
+
+		}
+
+	}
+	
 
 }

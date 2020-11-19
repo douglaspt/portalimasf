@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.validator.constraints.Email;
+import org.mindrot.jbcrypt.BCrypt;
 import org.primefaces.PrimeFaces;
 
 import br.com.pch.portalimasf.dao.AcessoDao;
@@ -66,20 +67,35 @@ public class LoginBean implements Serializable {
 		return beneficiario;
 	}
 
+	
 	public String efetuaLoginPorEmailSenha() {
 
 		System.out.println(email + " - " + senha);
 		try {
+			System.out.println("Aquii 01");
 			this.acesso = acessoDao.buscaPorEmailSenha(email, senha);
-
+			//this.acesso = acessoDao.buscaPorEmail(email);
+			System.out.println("Aquii 02");
 			if (this.acesso != null) {
-				context.getExternalContext().getSessionMap().put("acessoLogado", this.acesso);
-				this.beneficiario = this.acesso.getBeneficiario();
-				context.getExternalContext().getSessionMap().put("beneficiarioLogado", this.beneficiario);
-				return "principal?faces-redirect=true";
+				//if (BCrypt.checkpw(senha, this.acesso.getSenha())) {
+					System.out.println("Senha Correta");					
+					context.getExternalContext().getSessionMap().put("acessoLogado", this.acesso);
+					this.beneficiario = this.acesso.getBeneficiario();
+					context.getExternalContext().getSessionMap().put("beneficiarioLogado", this.beneficiario);
+					return "principal?faces-redirect=true";
+					
+				/*}	
+			    else {
+			    	System.out.println("Senha Incorreta");	
+			    	context.getExternalContext().getFlash().setKeepMessages(true);
+					context.addMessage(null, new FacesMessage("Senha Inválida"));
+			    }
+			    */	
+				
+			} else {
+				context.getExternalContext().getFlash().setKeepMessages(true);
+				context.addMessage(null, new FacesMessage("E-mail Inválido"));
 			}
-			context.getExternalContext().getFlash().setKeepMessages(true);
-			context.addMessage(null, new FacesMessage("E-mail ou senha Inválido"));
 
 		} catch (Exception e) {
 			context.getExternalContext().getFlash().setKeepMessages(true);
@@ -135,10 +151,11 @@ public class LoginBean implements Serializable {
 		if (this.acesso != null) {
 
 			String senhaNova = Senha.getRandomPass(6);
+			String senhaHasheada = Senha.criptografarSenha(senhaNova);
 
 			if (EnviaEmail.enviaEmail(this.acesso.getEmail(), this.acesso.getBeneficiario().getNome(), senhaNova)) {
 				loggedIn = true;
-				this.acesso.setSenha(senhaNova);
+				this.acesso.setSenha(senhaHasheada);
 				acessoDao.alterar(this.acesso);
 
 				message = new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -164,9 +181,10 @@ public class LoginBean implements Serializable {
 
 		this.acesso = (Acesso) context.getExternalContext().getSessionMap().get("acessoLogado");
 
-		if (this.acesso.getSenha().equals(this.senha)) {
+		//if (this.acesso.getSenha().equals(this.senha)) {
+		if (BCrypt.checkpw(this.senha, this.acesso.getSenha())) {
 			loggedIn = true;
-			this.acesso.setSenha(this.senhaNova);
+			this.acesso.setSenha(Senha.criptografarSenha(this.senhaNova));
 			acessoDao.alterar(this.acesso);
 			message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Senha Alterada", "Senha");
 

@@ -69,14 +69,19 @@ public class CoparticipacaoBean implements Serializable {
 		Calendar data = Calendar.getInstance();
 		data.set(ano, mes, 1);
 		if (this.beneficiario.getTitularidade() == 0) {
+			tituloPainelTitular = "Beneficiários";
+			this.contaBeneficiario = this.contaMedicaDao.buscaPorTitular(this.beneficiario, data);
+			/*
+			 
 			tituloPainelTitular = "Titular";
 			this.contaBeneficiario = this.contaMedicaDao.buscaPorBeneficiario(this.beneficiario, data);
-
+			
 			this.contaDependenteMenor = this.contaMedicaDao
 					.buscaPorDependenteMenor(this.beneficiario.getInscricao(), data);
 
 			this.contaDependenteMaior = this.contaMedicaDao
 					.buscaPorDependenteMaiorAgrupado(this.beneficiario.getInscricao(), data);
+			*/
 
 		} else {
 			tituloPainelTitular = "Beneficiário";

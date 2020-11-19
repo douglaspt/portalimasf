@@ -247,6 +247,40 @@ public class ContaMedicaDao implements Serializable {
 
 	}
 	
+	
+	//Adicionado em 03/12/2019 - Nova determinação
+	public List<ContaMedica> buscaPorTitular(Beneficiario beneficiario, Calendar dataDesconto) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ContaMedica> query = cb.createQuery(ContaMedica.class);
+		Root<ContaMedica> root = query.from(ContaMedica.class);
+
+		Path<Integer> beneficiarioPath = root.<Beneficiario>get("beneficiario").<Integer>get("inscricao");
+		Path<Calendar> dataDescontoPath = root.<Calendar>get("dataDesconto");
+
+		List<Predicate> predicates = new ArrayList<Predicate>();
+
+		Predicate benefiIgual = cb.equal(beneficiarioPath, beneficiario.getInscricao());
+		predicates.add(benefiIgual);
+
+		Predicate dataDescontoIgual = cb.equal(dataDescontoPath, dataDesconto);
+		predicates.add(dataDescontoIgual);
+
+		query.where((Predicate[]) predicates.toArray(new Predicate[0]));
+		query.orderBy(cb.asc(root.<Beneficiario>get("beneficiario").<Integer>get("titularidade")),
+				cb.asc(root.get("dataEntrada")));
+
+		TypedQuery<ContaMedica> typedQuery = em.createQuery(query);
+		
+		System.out.println("buscaPorBeneficiario: "+beneficiario.getId()+" Data: "+dataDesconto.getTime());
+		try {
+			return typedQuery.getResultList();
+		} catch (NoResultException ex) {
+			return null;
+
+		}
+
+	}
 
 
 	// Calendar referenciaFinal = Calendar.getInstance();

@@ -8,12 +8,19 @@ import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceUnit;
 
 @ApplicationScoped
 public class JPAUtil {
 
-	private static EntityManagerFactory emf = Persistence
-			.createEntityManagerFactory("portalimasf");
+	//private static EntityManagerFactory emf = Persistence
+	//		.createEntityManagerFactory("portalimasf");
+	
+	//@PersistenceUnit(unitName = "portalimasf2xxxxx")
+	//private static EntityManagerFactory emf;
+	
+    @PersistenceUnit(unitName = "portalimasf")
+    private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("portalimasf");
 
 	@Produces
     @RequestScoped

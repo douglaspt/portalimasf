@@ -31,8 +31,15 @@
 					<p:selectOneMenu value="#{itemValorBean.nomeConveniado}"
 						effect="fade" id="prestador">
 						<f:selectItem itemLabel="Selecionar" noSelectionOption="true" />
-						<f:selectItems value="#{itemValorBean.conveniados}" var="c"
+						<f:selectItems value="#{itemValorBean.conveniadosRedeNormal}" var="c"
 							itemValue="#{c.nome}" itemLabel="#{c.nome}" />
+					</p:selectOneMenu>
+					<p:outputLabel value="Grupo:" for="grupo" />
+					<p:selectOneMenu value="#{itemValorBean.grupo}"
+						effect="fade" id="grupo">
+						<f:selectItem itemLabel="Selecionar" noSelectionOption="true" />
+						<f:selectItems value="#{itemValorBean.grupos}" var="c"
+							itemValue="#{c.descricao}" itemLabel="#{c.descricao}" />
 					</p:selectOneMenu>
 					<br></br>
 
@@ -82,8 +89,12 @@
 					</h:outputText>
 				</p:column>
 
-				<p:column headerText="Tipo">
-					<h:outputText value="#{item.idTipoArquivo}" />
+				<p:column headerText="Grupo">
+					<h:outputText value="#{item.classificacaoSADT.grupo}" />
+				</p:column>
+				
+				<p:column headerText="Sub Grupo">
+					<h:outputText value="#{item.classificacaoSADT.subGrupo}" />
 				</p:column>
 
 			</p:dataTable>

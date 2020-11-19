@@ -76,7 +76,7 @@ public class BeneficiarioDao implements Serializable {
 
 		// (root.<Beneficiario>get("beneficiario").<Integer>get("titularidade")),
 		// cb.asc(root.get("dataEntrada")));
-
+		System.out.println(dataNascimento.getTime()+" - "+cpf);
 		TypedQuery<Beneficiario> typedQuery = em.createQuery(query).setMaxResults(1);
 		try {
 			return typedQuery.getSingleResult();

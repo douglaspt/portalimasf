@@ -26,6 +26,8 @@ public class Acesso {
 	@OneToOne
 	private Beneficiario beneficiario;
 	
+	private String senhaOld;
+	
 	
 	public Acesso() {
 
@@ -62,5 +64,12 @@ public class Acesso {
 		this.beneficiario = beneficiario;
 	}
 
+	public String getSenhaOld() {
+		return senhaOld;
+	}
+
+	public void setSenhaOld(String senhaOld) {
+		this.senhaOld = senhaOld;
+	}
 
 }

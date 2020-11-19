@@ -13,6 +13,7 @@ import javax.inject.Named;
 
 import br.com.pch.portalimasf.dao.ItemValorDao;
 import br.com.pch.portalimasf.modelo.Conveniado;
+import br.com.pch.portalimasf.modelo.DescricaoCombo;
 import br.com.pch.portalimasf.modelo.ItemValor;
 
 @Named
@@ -24,10 +25,13 @@ public class ItemValorBean implements Serializable{
 	private String nomeConveniado = "";
 	private String codPadrao = "";
 	private String descricao = "";
+	private String grupo = "";
 	
 	private List<ItemValor> itens = new ArrayList<>();
-	private List<Conveniado> conveniados = new ArrayList<>();
-	private String[] selectedConveniados;
+	private List<Conveniado> conveniadosRedeNormal = new ArrayList<>();
+	private List<Conveniado> conveniadosRedeReferencia = new ArrayList<>();
+	private List<DescricaoCombo> grupos = new ArrayList<>();
+	//private String[] selectedConveniados;
 	
 	@Inject
 	private ItemValorDao itemValorDao;
@@ -37,8 +41,9 @@ public class ItemValorBean implements Serializable{
 	
 	@PostConstruct
 	void init() {
-		this.conveniados = itemValorDao.buscaConveniado(1);
-		this.conveniados = itemValorDao.buscaConveniado(2);
+		this.conveniadosRedeNormal = itemValorDao.buscaConveniado(1);
+		this.conveniadosRedeReferencia = itemValorDao.buscaConveniado(2);
+		this.grupos = itemValorDao.buscaGrupo();
 	}
 	
 	public void listaRedeNormal() {
@@ -112,20 +117,37 @@ public class ItemValorBean implements Serializable{
 		this.itens = itens;
 	}
 
-	public List<Conveniado> getConveniados() {
-		return conveniados;
+	public List<Conveniado> getConveniadosRedeNormal() {
+		return conveniadosRedeNormal;
 	}
 
-	public void setConveniados(List<Conveniado> conveniados) {
-		this.conveniados = conveniados;
+	public void setConveniadosRedeNormal(List<Conveniado> conveniadosRedeNormal) {
+		this.conveniadosRedeNormal = conveniadosRedeNormal;
 	}
 
-	public String[] getSelectedConveniados() {
-		return selectedConveniados;
+	public List<Conveniado> getConveniadosRedeReferencia() {
+		return conveniadosRedeReferencia;
 	}
 
-	public void setSelectedConveniados(String[] selectedConveniados) {
-		this.selectedConveniados = selectedConveniados;
+	public void setConveniadosRedeReferencia(List<Conveniado> conveniadosRedeReferencia) {
+		this.conveniadosRedeReferencia = conveniadosRedeReferencia;
 	}
+
+	public List<DescricaoCombo> getGrupos() {
+		return grupos;
+	}
+
+	public void setGrupos(List<DescricaoCombo> grupos) {
+		this.grupos = grupos;
+	}
+
+	public String getGrupo() {
+		return grupo;
+	}
+
+	public void setGrupo(String grupo) {
+		this.grupo = grupo;
+	}
+	
 
 }

@@ -2,6 +2,8 @@ package br.com.pch.portalimasf.modelo;
 
 import java.util.Random;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 public class Senha {
 
 	public static String getRandomPass(int len) {
@@ -15,6 +17,12 @@ public class Senha {
 		for (int x = 0; x < len; x++)
 			senha[x] = chart[rdm.nextInt(chartLenght)];
 		return new String(senha);
+	}
+	
+	public static String criptografarSenha(String senha) {
+		String salGerado = BCrypt.gensalt();
+		String senhaHasheada = BCrypt.hashpw(senha, salGerado);
+		return senhaHasheada;
 	}
 
 }

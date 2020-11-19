@@ -8,6 +8,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import br.com.pch.portalimasf.dao.ContaMedicaDao;
+import br.com.pch.portalimasf.modelo.Beneficiario;
 import br.com.pch.portalimasf.modelo.ContaMedica;
 
 public class TesteContamedica {
@@ -21,13 +22,19 @@ public class TesteContamedica {
 		Calendar dataIni = Calendar.getInstance();
 		
 
-		dataIni.set(2019, 3, 01);
+		dataIni.set(2019, 10, 01);
 						
 		ContaMedicaDao dao = new ContaMedicaDao(em);
 		
 		//List<ContaMedica> contas = dao.buscaPorDependenteMaior(11396, dataIni);
 		
-		List<ContaMedica> contas = dao.buscaPorDependenteMenor(3930, dataIni);
+		//List<ContaMedica> contas = dao.buscaPorDependenteMenor(3930, dataIni);
+		
+		Beneficiario ben = new Beneficiario();
+		ben.setId(128106);
+		ben.setInscricao(19035);
+		
+		List<ContaMedica> contas = dao.buscaPorTitular(ben, dataIni);
 		
 		for (ContaMedica contaMedica : contas) {
 			System.out.println(contaMedica.getDescricaoItem());

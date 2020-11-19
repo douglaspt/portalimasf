@@ -15,6 +15,7 @@ import org.hibernate.validator.constraints.Email;
 import br.com.pch.portalimasf.dao.AcessoDao;
 import br.com.pch.portalimasf.modelo.Acesso;
 import br.com.pch.portalimasf.modelo.Beneficiario;
+import br.com.pch.portalimasf.modelo.Senha;
 import br.com.pch.portalimasf.tx.Transacional;
 
 @Named
@@ -42,6 +43,7 @@ public class AcessoBean implements Serializable {
 		this.acesso.setEmail(this.beneficiario.getEmail());
 
 	}
+	
 
 	@Transacional
 	public String gravar() {
@@ -61,6 +63,8 @@ public class AcessoBean implements Serializable {
 		}
 
 		this.acesso.setDataCriacao(Calendar.getInstance());
+		this.acesso.setSenhaOld(this.acesso.getSenha());
+		this.acesso.setSenha(Senha.criptografarSenha(this.acesso.getSenha()));
 		this.acessoDao.adiciona(this.acesso);
 		context.getExternalContext().getFlash().setKeepMessages(true);
 		context.addMessage(null, new FacesMessage("Cadastro Realizado com Sucesso!"));
